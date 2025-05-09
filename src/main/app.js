@@ -3,15 +3,17 @@ const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const path = require("path");
 const session = require("express-session");
+const passport = require("passport");
 
 const { sequelize } = require("../../models");
 
 const indexRouter = require("./router");
-const blogRouter = require("./router/blog");
+const authRouter = require("./router/auth");
 
 require("dotenv").config();
 
 const app = express();
+authConfig();
 app.set("port", process.env.PORT || 8080);
 
 sequelize
@@ -39,6 +41,9 @@ app.use(
         },
     })
 );
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use("/", indexRouter);
 app.use("/blog", blogRouter);
