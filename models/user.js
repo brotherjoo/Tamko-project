@@ -19,7 +19,7 @@ module.exports = class User extends Sequelize.Model {
                     unique: true,
                 },
                 auth: {
-                    type: Sequelize.STRING(10),
+                    type: Sequelize.ENUM("nomal", "admin"),
                     allowNull: false,
                 },
             },

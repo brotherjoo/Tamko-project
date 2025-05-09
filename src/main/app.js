@@ -4,9 +4,10 @@ const morgan = require("morgan");
 const path = require("path");
 const session = require("express-session");
 
-const { sequelize } = require("./models");
+const { sequelize } = require("../../models");
 
-const indexRouter = require("./src/main/router");
+const indexRouter = require("./router");
+const blogRouter = require("./router/blog");
 
 require("dotenv").config();
 
@@ -40,6 +41,7 @@ app.use(
 );
 
 app.use("/", indexRouter);
+app.use("/blog", blogRouter);
 
 app.use((req, res, next) => {
     const error = new Error(`${req.method} ${req.url} 라우터가 없습니다`);
@@ -50,7 +52,6 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
     res.locals.message = err.message;
     res.locals.error = process.env.NODE_ENV !== "production" ? err : {};
-
     res.status(err.status || 500);
     res.render("error");
 });
