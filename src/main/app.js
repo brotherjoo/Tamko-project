@@ -7,6 +7,7 @@ const passport = require("passport");
 
 const { sequelize } = require("../../models");
 
+const authConfig = require("./auth/index");
 const indexRouter = require("./router");
 const authRouter = require("./router/auth");
 
@@ -17,7 +18,7 @@ authConfig();
 app.set("port", process.env.PORT || 8080);
 
 sequelize
-    .sync({ force: false })
+    .sync({ force: true })
     .then(() => {
         console.log("데이터베이스 연결 성공");
     })
@@ -25,10 +26,10 @@ sequelize
         console.error(err);
     });
 
+app.use(express.json());
 app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.json());
-app.use(express.urlencoded({ extends: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(
     session({
@@ -46,7 +47,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use("/", indexRouter);
-app.use("/blog", blogRouter);
+app.use("/auth", authRouter);
+// app.use("/blog", blogRouter);
 
 app.use((req, res, next) => {
     const error = new Error(`${req.method} ${req.url} 라우터가 없습니다`);
@@ -57,8 +59,7 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
     res.locals.message = err.message;
     res.locals.error = process.env.NODE_ENV !== "production" ? err : {};
-    res.status(err.status || 500);
-    res.render("error");
+    res.status(err.status || 500).send();
 });
 
 module.exports = app;

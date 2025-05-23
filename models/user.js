@@ -10,7 +10,7 @@ module.exports = class User extends Sequelize.Model {
                     unique: true,
                 },
                 password: {
-                    type: Sequelize.STRING(50),
+                    type: Sequelize.STRING(100),
                     allowNull: false,
                 },
                 nickname: {
@@ -18,10 +18,10 @@ module.exports = class User extends Sequelize.Model {
                     allowNull: false,
                     unique: true,
                 },
-                auth: {
-                    type: Sequelize.ENUM("nomal", "admin"),
-                    allowNull: false,
-                },
+                // auth: {
+                //     type: Sequelize.ENUM("nomal", "admin"),
+                //     allowNull: false,
+                // },
             },
             {
                 sequelize,

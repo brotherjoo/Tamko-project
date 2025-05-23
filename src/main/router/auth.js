@@ -3,14 +3,16 @@ const passport = require("passport");
 const bcrypt = require("bcrypt");
 
 const { isLoggedIn, isNotLoggedIn } = require("../middlewares/check_login");
-const auth = require("../auth");
 
 const User = require("../../../models/user");
 
 const router = express.Router();
 
-router.post("/join", isNotLoggedIn, async (req, res, next) => {
+router.post("/join", async (req, res, next) => {
+    console.log(req.body);
     const { email, password, nickname } = req.body;
+    console.log(1);
+    console.log(email, password, nickname);
     try {
         const exUser = await User.findOne({ where: { email } });
         if (exUser) {
@@ -18,16 +20,16 @@ router.post("/join", isNotLoggedIn, async (req, res, next) => {
             return;
         }
 
-        const hash = await bcrypt.hash(password, 24);
+        const hash = await bcrypt.hash(password, 12);
 
-        User.create({
+        await User.create({
             email: email,
             password: hash,
             nickname: nickname,
-            auth: "nomal",
+            // auth: "nomal",
         });
 
-        res.status(201).send();
+        res.status(201).send("ok");
     } catch (err) {
         console.error(err);
         next(err);
@@ -51,7 +53,7 @@ router.post("/login", isNotLoggedIn, (req, res, next) => {
                 return next(loginError);
             }
 
-            return res.status(301).redirect("/");
+            return res.status(301).send("created");
         });
     })(req, res, next);
 });

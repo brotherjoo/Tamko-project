@@ -1,5 +1,5 @@
 const passport = require("passport");
-const local = require("passport-local");
+const local = require("../auth/localStrategy");
 const User = require("../../../models/user");
 
 module.exports = () => {
@@ -16,4 +16,6 @@ module.exports = () => {
                 done(done);
             });
     });
+
+    local();
 };
