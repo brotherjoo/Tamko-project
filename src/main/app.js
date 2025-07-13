@@ -10,15 +10,18 @@ const { sequelize } = require("../../models");
 const authConfig = require("./auth/index");
 const indexRouter = require("./router");
 const authRouter = require("./router/auth");
+const blogRouter = require("./router/blog");
 
 require("dotenv").config();
 
 const app = express();
 authConfig();
 app.set("port", process.env.PORT || 8080);
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "pug");
 
 sequelize
-    .sync({ force: true })
+    .sync({ force: false })
     .then(() => {
         console.log("데이터베이스 연결 성공");
     })
@@ -28,7 +31,8 @@ sequelize
 
 app.use(express.json());
 app.use(morgan("dev"));
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "../../public")));
+console.log(path.join(__dirname, "public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(
@@ -48,7 +52,7 @@ app.use(passport.session());
 
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
-// app.use("/blog", blogRouter);
+app.use("/blog", blogRouter);
 
 app.use((req, res, next) => {
     const error = new Error(`${req.method} ${req.url} 라우터가 없습니다`);

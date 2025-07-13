@@ -1,27 +1,75 @@
 const express = require("express");
 
-const User = require("../../../models/user");
 const Post = require("../../../models/post");
 const Game = require("../../../models/game");
 
+const upload = require("../middlewares/upload");
 const router = express.Router();
 
-router.post("/register", async (req, res, next) => {
-    const { user, post, game } = req.body;
+router.get("/", async (req, res, next) => {
+    const gamelist = await Game.findAll({});
 
-    const exUser = await User.findOne({ where: user.email });
+    console.log(gamelist);
 
-    if (!exUser) {
-        res.status(403).send("not found user");
-    }
+    const games = gamelist.map((game) => {
+        const name = game.dataValues.name;
+        return {
+            name: name,
+        };
+    });
 
-    const exGame = await Game.findOne({ where: "name" });
-
-    if (!exGame) {
-        await Game.create({
-            name: game.name,
-        })
-    }
-
-    
+    res.render("blog", { games: games });
 });
+
+router.post("/register", upload.single("otherGameImage"), async (req, res, next) => {
+    try {
+        const { rating, description, game, otherGameTitle } = req.body;
+        const imageFile = req.file;
+
+        if (game === "other") {
+            if (!otherGameTitle || !imageFile) {
+                return res.status(400).json({ message: "기타 게임 정보가 누락되었습니다." });
+            }
+            // 파일 경로 예: "/uploads/filename.jpg"
+            const imagePath = "/uploads/" + imageFile.filename;
+
+            const game = await Game.create({
+                name: otherGameTitle,
+                img: imagePath,
+                star: rating,
+            });
+
+            await Post.create({
+                text: description,
+                star: rating,
+                GameId: game.id,
+            });
+        } else {
+            const game = await Game.findOne({ name: game });
+
+            const posts = await Post.findAll({
+                where: { gameId: game.id },
+            });
+
+            let sum = 0;
+
+            posts.forEach((post) => {
+                sum += post.dataValues.star;
+            });
+
+            Ex = (sum + rating) / (posts.length + 1);
+
+            await Post.create({
+                text: description,
+                star: rating,
+                GameId: game.id,
+            });
+        }
+        return res.status(200).json({ message: "등록 완료" });
+    } catch (error) {
+        console.error("글 작성 중 에러:", error);
+        return res.status(500).json({ message: "서버 오류" });
+    }
+});
+
+module.exports = router;

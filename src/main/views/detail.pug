@@ -1,0 +1,36 @@
+extend layout
+
+block title
+  | 상세 보기
+
+block head 
+  link(rel="stylesheet", href="/detail.css")
+
+block content
+  .detail-container
+    .left-panel
+      img#game-image(src=game.imageUrl, alt=game.title)
+
+    .right-panel
+      h2#game-title= game.title
+
+      .rating
+        span 별점:
+        .stars
+          - const fullStars = Math.floor(game.rating)
+          - const hasHalf = game.rating - fullStars >= 0.5
+          - for (let i = 1; i <= 5; i++)
+            - if (i <= fullStars)
+              span.star.filled ★
+            - else if (i === fullStars + 1 && hasHalf)
+              span.star.half ★
+            - else
+              span.star ☆
+        span#numeric-rating #{game.rating} / 5
+
+      .review-section
+        h3 리뷰
+        p#review-text= game.review
+
+block script 
+  script(src="./js/detail.js") 

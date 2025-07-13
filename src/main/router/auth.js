@@ -8,7 +8,7 @@ const User = require("../../../models/user");
 
 const router = express.Router();
 
-router.post("/join", async (req, res, next) => {
+router.post("/join", isNotLoggedIn, async (req, res, next) => {
     console.log(req.body);
     const { email, password, nickname } = req.body;
     console.log(1);
@@ -16,7 +16,7 @@ router.post("/join", async (req, res, next) => {
     try {
         const exUser = await User.findOne({ where: { email } });
         if (exUser) {
-            res.status(403).send("Already present");
+            res.redirect("/join?error=exist");
             return;
         }
 
@@ -29,22 +29,24 @@ router.post("/join", async (req, res, next) => {
             // auth: "nomal",
         });
 
-        res.status(201).send("ok");
+        res.redirect("/");
     } catch (err) {
         console.error(err);
-        next(err);
+        return next(err);
     }
 });
 
 router.post("/login", isNotLoggedIn, (req, res, next) => {
+    console.log(req.body);
+
     passport.authenticate("local", (authError, user, info) => {
         if (authError) {
             console.error(authError);
-            return next(error);
+            return next(authError);
         }
 
         if (!user) {
-            return res.status(403).send("loginError");
+            return res.redirect(`/loginError=${info.message}`);
         }
 
         return req.login(user, (loginError) => {
@@ -53,7 +55,7 @@ router.post("/login", isNotLoggedIn, (req, res, next) => {
                 return next(loginError);
             }
 
-            return res.status(301).send("created");
+            return res.redirect("/");
         });
     })(req, res, next);
 });

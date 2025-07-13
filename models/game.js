@@ -13,6 +13,10 @@ module.exports = class Game extends Sequelize.Model {
                     type: Sequelize.STRING(100),
                     allowNull: true,
                 },
+                star: {
+                    type: Sequelize.FLOAT,
+                    allowNull: false,
+                },
             },
             {
                 sequelize,

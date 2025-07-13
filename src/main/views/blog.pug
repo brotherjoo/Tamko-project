@@ -1,0 +1,41 @@
+extend layout.pug 
+
+block head 
+  link(rel="stylesheet", href="/blog.css")
+
+block title 
+  | 리뷰 등록
+
+block content 
+  h1 리뷰 등록하기
+
+      form#write-form(enctype="multipart/form-data")
+        label(for="game") 게임 선택
+
+        select#game(name="game" required)
+          option(value="") 게임을 선택하세요
+          each game in games
+            option(value=game.name)= game.name
+          option(value="other") 기타
+
+        .other-game-input(style="display:none;")
+          label(for="otherGameTitle") 게임 제목 입력
+          input#otherGameTitle(type="text" name="otherGameTitle" placeholder="게임 제목을 입력하세요")
+
+          label(for="otherGameImage") 게임 이미지 업로드
+          input#otherGameImage(type="file" name="otherGameImage" accept="image/*")
+
+        label 별점
+        .rating-stars
+          each star in [5,4,3,2,1]
+            input(type="radio" name="rating" id=`star${star}` value=star)
+            label(for=`star${star}`) ★
+
+        label(for="description") 리뷰
+        textarea#description(name="description" rows="6" required placeholder="상세 설명을 입력하세요")
+
+        button(type="submit") 등록하기
+
+block script
+  script(src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js")
+  script(src="./js/blog.js")

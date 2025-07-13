@@ -1,0 +1,21 @@
+extends layout.pug
+
+block head 
+  link(rel="stylesheet", href="index.css")
+
+block title
+  | 리뷰 목록
+
+block content
+  h1 리뷰 목록
+  .photo-container
+    ul.photo-list
+      each game in games
+        a(href=`/detail/${game.id}`) 
+          li.photo-item
+            img(src=game.url, alt=game.title)
+            div.photo-title= game.title
+            div.photo-description= game.average
+
+block script 
+  script(src="./js/index.js") 

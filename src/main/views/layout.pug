@@ -1,0 +1,22 @@
+doctype html
+html(lang="ko")
+  head
+    meta(charset="UTF-8")
+    block head
+    title
+      block title
+        | 게임 리스트
+    link(rel="stylesheet", href="/layout.css")
+  body
+    header.header
+      a.logo 게임 리뷰
+      .header-buttons
+        button.login-btn 로그인
+        button.join-btn 회원가입
+        button.write-btn 글쓰기
+
+    main
+      block content
+    
+  script(src="./js/layout.js") 
+  block script
