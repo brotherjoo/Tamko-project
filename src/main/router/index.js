@@ -36,11 +36,21 @@ router.get("/detail/:id", async (req, res, next) => {
 
     const posts = await Post.findAll({ where: { GameId: gameId } });
 
+    console.log(posts);
+
     for (const post of posts) {
         const user = await User.findByPk(post.dataValues.UserId);
-        const text = post.dataValues.text + `\tby ${user.dataValues.nickname}` + "\n\n\n";
+
+        let nickname = "(알 수 없음)";
+        if (user) {
+            nickname = user.dataValues.nickname;
+        }
+
+        const text = post.dataValues.text + `\tby ${nickname}` + "\n\n\n";
         comment += text;
     }
+
+    console.log("d");
 
     const gameData = {
         imageUrl: game.img,

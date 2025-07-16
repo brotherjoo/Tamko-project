@@ -48,24 +48,34 @@ router.post("/register", isLoggedIn, upload.single("otherGameImage"), async (req
                 UserId: userId,
             });
         } else {
-            const game = await Game.findOne({ name: game });
+            const oldgame = await Game.findOne({ where: { name: game } });
 
             const posts = await Post.findAll({
-                where: { gameId: game.id },
+                where: { gameId: oldgame.id },
             });
 
             let sum = 0;
 
-            posts.forEach((post) => {
-                sum += post.dataValues.star;
-            });
+            console.log(posts);
 
-            Ex = (sum + rating) / (posts.length + 1);
+            for (const post of posts) {
+                const starNum = Number(post.dataValues.star);
+                sum += starNum;
+            }
+
+            const ratingNum = Number(rating);
+            sum += ratingNum;
+
+            const Ex = sum / (posts.length + 1);
+            console.log(Ex);
+
+            await Game.update({ star: Ex }, { where: { id: oldgame.id } });
 
             await Post.create({
                 text: description,
                 star: rating,
-                GameId: game.id,
+                GameId: oldgame.id,
+                UserId: userId,
             });
         }
         return res.status(200).json({ message: "등록 완료" });
