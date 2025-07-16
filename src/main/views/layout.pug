@@ -11,12 +11,15 @@ html(lang="ko")
     header.header
       a.logo 게임 리뷰
       .header-buttons
-        button.login-btn 로그인
-        button.join-btn 회원가입
+        if isLoggedIn 
+          button.logout-btn 로그아웃
+        else 
+          button.login-btn 로그인
+          button.join-btn 회원가입
         button.write-btn 글쓰기
 
     main
       block content
     
-  script(src="./js/layout.js") 
+  script(src="/js/layout.js") 
   block script

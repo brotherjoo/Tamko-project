@@ -7,8 +7,6 @@ exports.isLoggedIn = (req, res, next) => {
 };
 
 exports.isNotLoggedIn = (req, res, next) => {
-    console.log("d");
-
     if (!req.isAuthenticated()) {
         next();
     } else {

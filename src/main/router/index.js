@@ -1,7 +1,8 @@
 const express = require("express");
 const Post = require("../../../models/post");
 const Game = require("../../../models/game");
-const { access } = require("fs");
+const User = require("../../../models/user");
+const { isLoggedIn, isNotLoggedIn } = require("../middlewares/check_login");
 
 const router = express.Router();
 
@@ -35,9 +36,11 @@ router.get("/detail/:id", async (req, res, next) => {
 
     const posts = await Post.findAll({ where: { GameId: gameId } });
 
-    posts.forEach((post) => {
-        comment += post.dataValues.text + "\n\n\n";
-    });
+    for (const post of posts) {
+        const user = await User.findByPk(post.dataValues.UserId);
+        const text = post.dataValues.text + `\tby ${user.dataValues.nickname}` + "\n\n\n";
+        comment += text;
+    }
 
     const gameData = {
         imageUrl: game.img,
@@ -49,11 +52,11 @@ router.get("/detail/:id", async (req, res, next) => {
     res.render("detail", { game: gameData });
 });
 
-router.get("/login", (req, res, next) => {
+router.get("/login", isNotLoggedIn, (req, res, next) => {
     res.render("login", {});
 });
 
-router.get("/join", (req, res, next) => {
+router.get("/join", isNotLoggedIn, (req, res, next) => {
     res.render("join", {});
 });
 

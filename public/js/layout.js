@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const loginBtn = document.querySelector(".login-btn");
     const writeBtn = document.querySelector(".write-btn");
     const joinBtn = document.querySelector(".join-btn");
+    const logoutBtn = document.querySelector(".logout-btn");
 
     if (logo) {
         logo.addEventListener("click", () => {
@@ -25,6 +26,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (joinBtn) {
         joinBtn.addEventListener("click", () => {
             window.location.assign("/join");
+        });
+    }
+
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", () => {
+            window.location.assign("/auth/logout");
         });
     }
 });

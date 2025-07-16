@@ -3,10 +3,11 @@ const express = require("express");
 const Post = require("../../../models/post");
 const Game = require("../../../models/game");
 
+const { isLoggedIn, isNotLoggedIn } = require("../middlewares/check_login");
 const upload = require("../middlewares/upload");
 const router = express.Router();
 
-router.get("/", async (req, res, next) => {
+router.get("/", isLoggedIn, async (req, res, next) => {
     const gamelist = await Game.findAll({});
 
     console.log(gamelist);
@@ -21,9 +22,10 @@ router.get("/", async (req, res, next) => {
     res.render("blog", { games: games });
 });
 
-router.post("/register", upload.single("otherGameImage"), async (req, res, next) => {
+router.post("/register", isLoggedIn, upload.single("otherGameImage"), async (req, res, next) => {
     try {
         const { rating, description, game, otherGameTitle } = req.body;
+        const userId = req.user.dataValues.id;
         const imageFile = req.file;
 
         if (game === "other") {
@@ -43,6 +45,7 @@ router.post("/register", upload.single("otherGameImage"), async (req, res, next)
                 text: description,
                 star: rating,
                 GameId: game.id,
+                UserId: userId,
             });
         } else {
             const game = await Game.findOne({ name: game });

@@ -33,5 +33,3 @@ module.exports = () => {
         )
     );
 };
-
-module.exports = () => {};

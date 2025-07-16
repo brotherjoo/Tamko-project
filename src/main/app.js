@@ -11,6 +11,7 @@ const authConfig = require("./auth/index");
 const indexRouter = require("./router");
 const authRouter = require("./router/auth");
 const blogRouter = require("./router/blog");
+const defaultRouter = require("./router/default");
 
 require("dotenv").config();
 
@@ -50,6 +51,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(defaultRouter);
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
 app.use("/blog", blogRouter);
@@ -63,7 +65,8 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
     res.locals.message = err.message;
     res.locals.error = process.env.NODE_ENV !== "production" ? err : {};
-    res.status(err.status || 500).send();
+    res.status(err.status || 500);
+    res.render("error");
 });
 
 module.exports = app;

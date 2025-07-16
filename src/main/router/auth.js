@@ -2,7 +2,7 @@ const express = require("express");
 const passport = require("passport");
 const bcrypt = require("bcrypt");
 
-const { isLoggedIn, isNotLoggedIn } = require("../middlewares/check_login");
+const { isNotLoggedIn } = require("../middlewares/check_login");
 
 const User = require("../../../models/user");
 
@@ -60,10 +60,17 @@ router.post("/login", isNotLoggedIn, (req, res, next) => {
     })(req, res, next);
 });
 
-router.get("/logout", isLoggedIn, (req, res, next) => {
-    req.logout();
-    req.session.destroy();
-    res.redirect("/");
+router.get("/logout", (req, res, next) => {
+    if (req.isAuthenticated()) {
+        req.logout(function (err) {
+            if (err) return next(err);
+            req.session.destroy(() => {
+                res.redirect("/");
+            });
+        });
+    } else {
+        res.redirect("/");
+    }
 });
 
 module.exports = router;
